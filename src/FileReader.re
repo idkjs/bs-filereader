@@ -78,7 +78,6 @@ module Blob = {
 
   /* slice */
 
-  /* self to avoid name clash with module iеself */
   [@bs.new] external makeUnsafe: (array('a), ~options: 'o=?, unit) => t = "Blob";
 
   let toArrayBuffer = blob =>
@@ -132,6 +131,5 @@ module File = {
 
   external asBlob: t => Blob.t = "%identity";
 
-  /* self to avoid name clash with module iеself */
   [@bs.new] external makeUnsafe: (~bits: array('a), ~name: string, ~options: 'o=?, unit) => t = "File";
 };
