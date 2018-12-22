@@ -8,7 +8,7 @@ type t;
 /*[@bs.new] [@bs.scope "self"]external make: unit => t = "FileReader";*/
 
 /* wrap constructor to avoid name clashes */
-/* @bs-scope' in constructor as self/window can cause name clashes in user code */
+/* @bs-scope' constructor as self/window can cause name clashes in user code */
 /* 'unit' param is important */
 let make: unit => t = [%raw {|
     function(unit) {
