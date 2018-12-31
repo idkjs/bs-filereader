@@ -5,16 +5,12 @@ type blob;
 type file;
 type t;
 
-/*[@bs.new] [@bs.scope "self"]external make: unit => t = "FileReader";*/
+[@bs.new] [@bs.scope "self"] external make_: unit => t = "FileReader";
 
-/* wrap constructor to avoid name clashes */
-/* @bs-scope' in constructor as self/window can cause name clashes in user code */
-/* 'unit' param is important */
-let make: unit => t = [%raw {|
-    function(unit) {
-        return new FileReader();
-    }
-|}];
+/* wrap to avoid 'self/FileReader' name clashes in user code  */
+let make = () => {
+  make_()
+};
 
 [@bs.get] external error_: t => Js.Nullable.t(dom_exception) = "error";
 let error = self => error_(self)->Js.Nullable.toOption;
@@ -78,8 +74,12 @@ module Blob = {
 
   /* slice */
 
-  /* self to avoid name clash with module iеself */
-  [@bs.new] external makeUnsafe: (array('a), ~options: 'o=?, unit) => t = "Blob";
+  [@bs.new] [@bs.scope "self"] external makeUnsafe_: (array('a), ~options: 'b=?, unit) => t = "Blob";
+
+  /* wrap to avoid 'self/Blob' name clashes in user code  */
+  let makeUnsafe = (array, ~options: option('b)=?, ()) => {
+    makeUnsafe_(array, ~options?, ())
+  };
 
   let toArrayBuffer = blob =>
     Js.Promise.make((~resolve, ~reject) => {
@@ -132,6 +132,11 @@ module File = {
 
   external asBlob: t => Blob.t = "%identity";
 
-  /* self to avoid name clash with module iеself */
-  [@bs.new] external makeUnsafe: (~bits: array('a), ~name: string, ~options: 'o=?, unit) => t = "File";
+  [@bs.new] [@bs.scope "self"] external makeUnsafe_: (array('a), ~name: string, ~options: 'b=?, unit) => t = "File";
+
+  /* wrap to avoid 'self/File' name clashes in user code  */
+  let makeUnsafe = (array, ~name: string, ~options: option('b)=?, unit) => {
+    makeUnsafe_(array, ~name, ~options?, ())
+  }
+  
 };

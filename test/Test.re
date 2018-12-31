@@ -1,6 +1,11 @@
 open FileReader;
 open Belt;
 
+/* name clash test */
+let self = 321;
+module Blob = FileReader.Blob;
+module FIle = FileReader.File;
+
 let fr = FileReader.make();
 
 let printResult = res =>
@@ -28,7 +33,7 @@ fr->onerror(e => {
   Js.log2("onerror e", e);
 });
 
-let file = File.makeUnsafe(~bits=[|Js.Typed_array.Uint8Array.make([|192, 193|])|], ~name="file1", ());
+let file = File.makeUnsafe([|Js.Typed_array.Uint8Array.make([|192, 193|])|], ~name="file1", ());
 Js.log2("file name", file->File.name);
 Js.log2("file last mod", file->File.lastModified);
 Js.log2("file size", file->File.size);
@@ -37,6 +42,7 @@ Js.log2("file type", file->File.type_);
 let blob = Blob.makeUnsafe([|Js.Typed_array.Uint8Array.make([|65, 66|])|], ());
 /* should not compile */
 /*Js.log2("blob name", blob->File.name);*/
+/* file->Blob.toDataURL; */
 
 /*fr->readAsArrayBuffer(file->File.asBlob);*/
 /*fr->readAsBinaryString(file->File.asBlob);*/
