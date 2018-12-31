@@ -138,5 +138,4 @@ module File = {
   let makeUnsafe = (array, ~name: string, ~options: option('b)=?, unit) => {
     makeUnsafe_(array, ~name, ~options?, ())
   }
-  
 };
