@@ -1,45 +1,66 @@
 open FileReader;
-open Belt;
+open Expect;
 
-/* name clash test */
-let self = 321;
-module Blob = FileReader.Blob;
-module FIle = FileReader.File;
+/* test name clash */
+module File = FileReader.File;
 
 let fr = FileReader.make();
 
-let printResult = res =>
-  switch (res) {
-  | Some(`String(s)) => Js.log2("result is string", s)
-  | Some(`ArrayBuffer(ab)) => Js.log2("result is array buffer", ab)
-  | None => Js.log("result is none")
-  };
-fr->result;
-printResult(fr->result);
-
-let error = fr->error;
-Js.log2("error", error);
-Js.log2("error is some", error->Option.isSome);
+expectToEqual(fr->error, None);
 
 fr->onload(e => {
-  Js.log("onload");
   Js.log2("onload e", e);
 
-  printResult(fr->result);
+  expectToEqual(fr->result, Some(`String({js|АБ|js})));
 });
 
 fr->onerror(e => {
-  Js.log("onerror");
   Js.log2("onerror e", e);
+  failwith("unreacahble");
 });
 
-let file = File.makeUnsafe([|Js.Typed_array.Uint8Array.make([|192, 193|])|], ~name="file1", ());
-Js.log2("file name", file->File.name);
-Js.log2("file last mod", file->File.lastModified);
-Js.log2("file size", file->File.size);
-Js.log2("file type", file->File.type_);
+open Js.Promise;
+open Js.Typed_array;
 
-let blob = Blob.makeUnsafe([|Js.Typed_array.Uint8Array.make([|65, 66|])|], ());
+let now = Js.Date.make()->Js.Date.getTime;
+
+let file =
+  File.make(
+    [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
+    "file1",
+    ~type_="my/type",
+    ~lastModified=now,
+    (),
+  );
+expectToEqual(file->File.name, "file1");
+expectToEqual(file->File.lastModified->Js.typeof, "number");
+expectToEqual(file->File.size->Js.typeof, "number");
+expectToEqual(file->File.lastModified, now);
+/* expectToEqual(file->File.type_, ""); */
+expectToEqual(file->File.type_, "my/type");
+expectToEqual(file->File.size, 2.0);
+
+let blob =
+  Blob.make(
+    [|`Uint8Array(Uint8Array.make([|65, 66, 67|]))|],
+    ~type_="old/type",
+    (),
+  );
+expectToEqual(blob->Blob.type_, "old/type");
+
+let sliced = blob->Blob.slice(~start=1, ~end_=3, ~contentType="new/type", ());
+expectToEqual(sliced->Blob.type_, "new/type");
+expectToEqual(sliced->Blob.size, 2.0);
+
+sliced->toArrayBuffer
+|> then_(ab => {
+     let arr = Uint8Array.fromBuffer(ab);
+     expectToEqual(arr->Uint8Array.byteLength, 2);
+     expectToEqual(arr->Uint8Array.unsafe_get(0), 66);
+     expectToEqual(arr->Uint8Array.unsafe_get(1), 67);
+     resolve();
+   });
+
 /* should not compile */
 /*Js.log2("blob name", blob->File.name);*/
 /* file->Blob.toDataURL; */
@@ -51,22 +72,27 @@ fr->readAsText(file->File.asBlob, ~encoding="Windows-1251", ());
 
 /*fr->readAsText(blob, ());*/
 
-open Js.Promise;
-
-blob->Blob.toArrayBuffer
+toArrayBuffer(blob)
 |> then_(ab => {
-     Js.log2("blobToArrayBuffer ok", ab);
+     expectInstanceOf(ab, array_buffer_ctor);
      resolve();
    });
 
-blob->Blob.toDataURL
+toDataURL(blob)
 |> then_(s => {
-     Js.log2("blobToDataURL ok", s);
+     expectToEqual(s->Js.typeof, "string");
      resolve();
    });
 
-blob->Blob.toText()
+toText(file->File.asBlob, ~encoding="Windows-1251", ())
 |> then_(s => {
-     Js.log2("blobToText ok", s);
+     expectToEqual(s, {js|АБ|js});
+     resolve();
+   });
+
+let blob2 = Blob.make([|`String("hello"), `String(" world")|], ());
+blob2->toText()
+|> then_(s => {
+     expectToEqual(s, "hello world");
      resolve();
    });

@@ -1,0 +1,2 @@
+type blob;
+type file;
