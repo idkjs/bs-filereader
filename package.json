@@ -8,9 +8,19 @@
     "webpack:watch": "webpack -w"
   },
   "keywords": [
-    "BuckleScript"
+    "BuckleScript",
+    "FileReader",
+    "Blob"
   ],
-  "author": "",
+  "author": {
+    "name": "Andriy Nesterenko",
+    "email": "zpnester@gmail.com",
+    "url": "https://github.com/zpnester"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zpnester/bs-filereader.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^4.0.7",
