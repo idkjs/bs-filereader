@@ -5,6 +5,8 @@ include (module type of
     type nonrec t = t;
   }));
 
+let asFile: t => option(FileReader_Types.file);
+
 let make:
   (
     array(FileReader_BlobPart.t),

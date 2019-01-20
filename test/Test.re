@@ -1,5 +1,6 @@
 open FileReader;
 open Expect;
+open Belt;
 
 /* test name clash */
 module File = FileReader.File;
@@ -40,6 +41,9 @@ expectToEqual(file->File.lastModified, now);
 expectToEqual(file->File.type_, "my/type");
 expectToEqual(file->File.size, 2.0);
 
+/* cast there and back */
+expectToEqual(file->File.asBlob->Blob.asFile->Option.isSome, true);
+
 let blob =
   Blob.make(
     [|`Uint8Array(Uint8Array.make([|65, 66, 67|]))|],
@@ -47,6 +51,7 @@ let blob =
     (),
   );
 expectToEqual(blob->Blob.type_, "old/type");
+expectToEqual(blob->Blob.asFile->Option.isNone, true);
 
 let sliced = blob->Blob.slice(~start=1, ~end_=3, ~contentType="new/type", ());
 expectToEqual(sliced->Blob.type_, "new/type");

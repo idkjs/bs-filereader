@@ -4,6 +4,19 @@ include FileReader_BlobLike.Make({
   type nonrec t = t;
 });
 
+
+let asFile_: t => Js.Nullable.t(FileReader_Types.file) = [%raw {|
+function(blob) {
+  if (blob instanceof File) {
+    return blob;
+  } else {
+    return null;
+  }
+}
+|}];
+
+let asFile = blob => asFile_(blob)->Js.Nullable.toOption
+
 type options = {
   .
   "type": Js.Nullable.t(string),
