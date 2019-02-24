@@ -22,7 +22,6 @@ exception FileReadError;
 
 module File = FileReader_File;
 module Blob = FileReader_Blob;
-module BlobPart = FileReader_BlobPart;
 
 let toArrayBuffer: Blob.t => Js.Promise.t(Js.Typed_array.ArrayBuffer.t);
 

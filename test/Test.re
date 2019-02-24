@@ -101,3 +101,5 @@ blob2->toText()
      expectToEqual(s, "hello world");
      resolve();
    });
+
+Js.log("OK");
