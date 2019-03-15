@@ -1,4 +1,4 @@
-type t = FileReader_Types.file;
+type t = FileReader__.file;
 
 include FileReader_BlobLike.Make({
   type nonrec t = t;

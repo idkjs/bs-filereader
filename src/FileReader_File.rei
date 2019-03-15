@@ -1,14 +1,14 @@
-type t = FileReader_Types.file;
+type t = FileReader__.file;
 
 include (module type of
   FileReader_BlobLike.Make({
     type nonrec t = t;
   }));
 
-let name: t => string;
-let lastModified: t => float;
+[@bs.get] external name: t => string = "name";
+[@bs.get] external lastModified: t => float = "lastModified";
 
-let asBlob: t => FileReader_Blob.t;
+external asBlob: t => FileReader_Blob.t = "%identity";
 
 let make:
   (

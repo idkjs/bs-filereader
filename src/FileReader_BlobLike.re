@@ -5,6 +5,6 @@ module Make = (M: {type t;}) => {
   [@bs.send]
   external slice:
     (M.t, ~start: int=?, ~end_: int=?, ~contentType: string=?, unit) =>
-    FileReader_Types.blob =
+    FileReader__.blob =
     "slice";
 };

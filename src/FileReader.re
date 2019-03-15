@@ -41,15 +41,7 @@ let result:
 
 [@bs.send] external abort: t => unit = "abort";
 
-/* [@bs.new] external make_: unit => t = "FileReader"; */
-/* wrap to avoid name clash */
-let make: unit => t = [%raw
-  {|
-function(unit) {
-  return new FileReader();
-}
-|}
-];
+[@bs.new] external make: unit => t = "FileReader";
 
 [@bs.send]
 external readAsArrayBuffer: (t, FileReader_Blob.t) => unit =

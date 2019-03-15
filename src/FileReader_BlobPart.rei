@@ -10,7 +10,7 @@ type t = [
   | `Float32Array(Js.Typed_array.Float32Array.t)
   | `Float64Array(Js.Typed_array.Float64Array.t)
   | `DataView(Js.Typed_array.DataView.t)
-  | `Blob(FileReader_Types.blob)
+  | `Blob(FileReader__.blob)
   | `String(string)
 ];
 

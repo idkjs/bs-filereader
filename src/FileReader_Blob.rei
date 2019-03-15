@@ -1,11 +1,11 @@
-type t = FileReader_Types.blob;
+type t = FileReader__.blob;
 
 include (module type of
   FileReader_BlobLike.Make({
     type nonrec t = t;
   }));
 
-let asFile: t => option(FileReader_Types.file);
+let asFile: t => option(t);
 
 let make:
   (
