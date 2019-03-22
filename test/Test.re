@@ -2,6 +2,10 @@ open FileReader;
 open Expect;
 open Belt;
 
+let isEdge: bool = [%raw {|
+(navigator.appVersion.indexOf("Edge") != -1)
+|}];
+
 /* test name clash */
 module File = FileReader.File;
 
@@ -25,24 +29,26 @@ open Js.Typed_array;
 
 let now = Js.Date.make()->Js.Date.getTime;
 
-let file =
-  File.make(
-    [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
-    "file1",
-    ~type_="my/type",
-    ~lastModified=now,
-    (),
-  );
-expectToEqual(file->File.name, "file1");
-expectToEqual(file->File.lastModified->Js.typeof, "number");
-expectToEqual(file->File.size->Js.typeof, "number");
-expectToEqual(file->File.lastModified, now);
-/* expectToEqual(file->File.type_, ""); */
-expectToEqual(file->File.type_, "my/type");
-expectToEqual(file->File.size, 2.0);
+if (!isEdge) {
+  let file =
+    File.make(
+      [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
+      "file1",
+      ~type_="my/type",
+      ~lastModified=now,
+      (),
+    );
+  expectToEqual(file->File.name, "file1");
+  expectToEqual(file->File.lastModified->Js.typeof, "number");
+  expectToEqual(file->File.size->Js.typeof, "number");
+  expectToEqual(file->File.lastModified, now);
+  /* expectToEqual(file->File.type_, ""); */
+  expectToEqual(file->File.type_, "my/type");
+  expectToEqual(file->File.size, 2.0);
 
-/* cast there and back */
-expectToEqual(file->File.asBlob->Blob.asFile->Option.isSome, true);
+  /* cast there and back */
+  expectToEqual(file->File.asBlob->Blob.asFile->Option.isSome, true);
+};
 
 let blob =
   Blob.make(
@@ -70,9 +76,16 @@ sliced->toArrayBuffer
 /*Js.log2("blob name", blob->File.name);*/
 /* file->Blob.toDataURL; */
 
+let file =
+  Blob.make(
+    [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
+    ~type_="my/type",
+    (),
+  );
+
 /*fr->readAsArrayBuffer(file->File.asBlob);*/
 /*fr->readAsBinaryString(file->File.asBlob);*/
-fr->readAsText(file->File.asBlob, ~encoding="Windows-1251", ());
+fr->readAsText(file, ~encoding="Windows-1251", ());
 /*fr->readAsDataURL(file->File.asBlob);*/
 
 /*fr->readAsText(blob, ());*/
@@ -89,7 +102,7 @@ toDataURL(blob)
      resolve();
    });
 
-toText(file->File.asBlob, ~encoding="Windows-1251", ())
+toText(file, ~encoding="Windows-1251", ())
 |> then_(s => {
      expectToEqual(s, {js|АБ|js});
      resolve();

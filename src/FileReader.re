@@ -96,4 +96,3 @@ let toText = (blob, ~encoding: option(string)=?, ()) =>
 
 module File = FileReader_File;
 module Blob = FileReader_Blob;
-module BlobPart = FileReader_BlobPart;

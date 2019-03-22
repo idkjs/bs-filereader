@@ -1,4 +1,6 @@
-type t = FileReader__.file;
+open FileReader__;
+
+type t = file;
 
 include FileReader_BlobLike.Make({
   type nonrec t = t;
@@ -19,23 +21,25 @@ type options = {
 external make_: (array(Js.Json.t), string, Js.Nullable.t(options)) => t =
   "File";
 
+[@bs.new] external make__: (array(Js.Json.t), string) => t = "File";
+
 let make =
     (
-      parts: array(FileReader_BlobPart.t),
+      parts: array(blobPart),
       name: string,
       ~type_: option(string)=?,
       ~lastModified: option(float)=?,
       (),
     ) => {
-  let parts = parts->Belt.Array.map(FileReader_BlobPart.toJson);
-  let options =
-    switch (type_, lastModified) {
-    | (None, None) => Js.Nullable.undefined
-    | (type_, lastModified) =>
+  let parts = parts->Belt.Array.map(blobPartToJson);
+  switch (type_, lastModified) {
+  | (None, None) => make__(parts, name)
+  | (type_, lastModified) =>
+    let options =
       Js.Nullable.return({
         "type": type_->Js.Nullable.fromOption,
         "lastModified": lastModified->Js.Nullable.fromOption,
-      })
-    };
-  make_(parts, name, options);
+      });
+    make_(parts, name, options);
+  };
 };

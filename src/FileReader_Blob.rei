@@ -9,7 +9,7 @@ let asFile: t => option(t);
 
 let make:
   (
-    array(FileReader_BlobPart.t),
+    array(FileReader__.blobPart),
     ~type_: string=?,
     ~endings: string=?,
     unit

@@ -12,7 +12,7 @@ external asBlob: t => FileReader_Blob.t = "%identity";
 
 let make:
   (
-    array(FileReader_BlobPart.t),
+    array(FileReader__.blobPart),
     string,
     ~type_: string=?,
     ~lastModified: float=?,
