@@ -5,7 +5,7 @@ include (module type of
     type nonrec t = t;
   }));
 
-let asFile: t => option(t);
+let asFile: t => option(FileReader__.file);
 
 let make:
   (

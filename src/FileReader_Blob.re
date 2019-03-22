@@ -6,7 +6,7 @@ include FileReader_BlobLike.Make({
   type nonrec t = t;
 });
 
-let asFile_: t => Js.Nullable.t(t) = [%raw
+let asFile_: t => Js.Nullable.t(file) = [%raw
   {|
 function(blob) {
   if (blob instanceof File) {

@@ -47,7 +47,10 @@ if (!isEdge) {
   expectToEqual(file->File.size, 2.0);
 
   /* cast there and back */
-  expectToEqual(file->File.asBlob->Blob.asFile->Option.isSome, true);
+  expectToEqual(
+    file->File.asBlob->Blob.asFile->Option.getExn->File.name,
+    "file1",
+  );
 };
 
 let blob =
