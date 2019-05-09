@@ -6,7 +6,7 @@ let isEdge: bool = [%raw {|
 (navigator.appVersion.indexOf("Edge") != -1)
 |}];
 
-/* test name clash */
+// test name clash
 module File = FileReader.File;
 
 let fr = FileReader.make();
@@ -30,19 +30,18 @@ open Js.Typed_array;
 let now = Js.Date.make()->Js.Date.getTime;
 
 if (!isEdge) {
+  let opts = File.Options.make(~_type="my/type", ~lastModified=now, ());
   let file =
-    File.make(
-      [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
+    File.makeWithOptions(
+      [|BlobPart.uint8Array(Uint8Array.make([|192, 193|]))|],
       "file1",
-      ~type_="my/type",
-      ~lastModified=now,
-      (),
+      opts,
     );
   expectToEqual(file->File.name, "file1");
   expectToEqual(file->File.lastModified->Js.typeof, "number");
   expectToEqual(file->File.size->Js.typeof, "number");
   expectToEqual(file->File.lastModified, now);
-  /* expectToEqual(file->File.type_, ""); */
+  //   expectToEqual(file->File.type_, "");
   expectToEqual(file->File.type_, "my/type");
   expectToEqual(file->File.size, 2.0);
 
@@ -54,15 +53,14 @@ if (!isEdge) {
 };
 
 let blob =
-  Blob.make(
-    [|`Uint8Array(Uint8Array.make([|65, 66, 67|]))|],
-    ~type_="old/type",
-    (),
+  Blob.makeWithOptions(
+    [|BlobPart.uint8Array(Uint8Array.make([|65, 66, 67|]))|],
+    Blob.Options.make(~_type="old/type", ()),
   );
 expectToEqual(blob->Blob.type_, "old/type");
 expectToEqual(blob->Blob.asFile->Option.isNone, true);
 
-let sliced = blob->Blob.slice(~start=1, ~end_=3, ~contentType="new/type", ());
+let sliced = blob->Blob.slice(~start=1, ~end_=3, ~contentType="new/type");
 expectToEqual(sliced->Blob.type_, "new/type");
 expectToEqual(sliced->Blob.size, 2.0);
 
@@ -75,23 +73,22 @@ sliced->toArrayBuffer
      resolve();
    });
 
-/* should not compile */
-/*Js.log2("blob name", blob->File.name);*/
-/* file->Blob.toDataURL; */
+// should not compile
+//Js.log2("blob name", blob->File.name);
+//file->Blob.toDataURL;
 
 let file =
-  Blob.make(
-    [|`Uint8Array(Uint8Array.make([|192, 193|]))|],
-    ~type_="my/type",
-    (),
+  Blob.makeWithOptions(
+    [|BlobPart.uint8Array(Uint8Array.make([|192, 193|]))|],
+    Blob.Options.make(~_type="my/type", ()),
   );
 
-/*fr->readAsArrayBuffer(file->File.asBlob);*/
-/*fr->readAsBinaryString(file->File.asBlob);*/
-fr->readAsText(file, ~encoding="Windows-1251", ());
-/*fr->readAsDataURL(file->File.asBlob);*/
+//fr->readAsArrayBuffer(file->File.asBlob);
+//fr->readAsBinaryString(file->File.asBlob);
+fr->readAsTextWithEncoding(file, "Windows-1251");
+//fr->readAsDataURL(file->File.asBlob);
 
-/*fr->readAsText(blob, ());*/
+//fr->readAsText(blob);
 
 toArrayBuffer(blob)
 |> then_(ab => {
@@ -111,7 +108,8 @@ toText(file, ~encoding="Windows-1251", ())
      resolve();
    });
 
-let blob2 = Blob.make([|`String("hello"), `String(" world")|], ());
+let blob2 =
+  Blob.make([|BlobPart.string("hello"), BlobPart.string(" world")|]);
 blob2->toText()
 |> then_(s => {
      expectToEqual(s, "hello world");

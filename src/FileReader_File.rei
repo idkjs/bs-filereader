@@ -10,12 +10,13 @@ include (module type of
 
 external asBlob: t => FileReader_Blob.t = "%identity";
 
-let make:
-  (
-    array(FileReader__.blobPart),
-    string,
-    ~type_: string=?,
-    ~lastModified: float=?,
-    unit
-  ) =>
-  t;
+module Options: {
+  type t;
+
+  [@bs.obj]
+  external make: (~_type: string=?, ~lastModified: float=?, unit) => t = "";
+};
+
+let make: (array(FileReader_BlobPart.t), string) => t;
+
+let makeWithOptions: (array(FileReader_BlobPart.t), string, Options.t) => t;

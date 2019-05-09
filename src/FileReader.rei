@@ -23,17 +23,22 @@ external readAsArrayBuffer: (t, FileReader_Blob.t) => unit =
 [@bs.send]
 external readAsDataURL: (t, FileReader_Blob.t) => unit = "readAsDataURL";
 
+[@bs.send] external readAsText: (t, FileReader_Blob.t) => unit = "readAsText";
+
 [@bs.send]
-external readAsText: (t, FileReader_Blob.t, ~encoding: string=?, unit) => unit =
+external readAsTextWithEncoding: (t, FileReader_Blob.t, string) => unit =
   "readAsText";
 
 exception FileReadError;
 
+let toArrayBuffer:
+  FileReader_Blob.t => Js.Promise.t(Js.Typed_array.ArrayBuffer.t);
+
+let toDataURL: FileReader_Blob.t => Js.Promise.t(string);
+
+let toText:
+  (FileReader_Blob.t, ~encoding: string=?, unit) => Js.Promise.t(string);
+
 module File = FileReader_File;
 module Blob = FileReader_Blob;
-
-let toArrayBuffer: Blob.t => Js.Promise.t(Js.Typed_array.ArrayBuffer.t);
-
-let toDataURL: Blob.t => Js.Promise.t(string);
-
-let toText: (Blob.t, ~encoding: string=?, unit) => Js.Promise.t(string);
+module BlobPart = FileReader_BlobPart;

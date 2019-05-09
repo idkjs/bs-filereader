@@ -7,11 +7,13 @@ include (module type of
 
 let asFile: t => option(FileReader__.file);
 
-let make:
-  (
-    array(FileReader__.blobPart),
-    ~type_: string=?,
-    ~endings: string=?,
-    unit
-  ) =>
-  t;
+module Options: {
+  type t;
+
+  [@bs.obj]
+  external make: (~_type: string=?, ~endings: string=?, unit) => t = "";
+};
+
+let make: array(FileReader_BlobPart.t) => t;
+
+let makeWithOptions: (array(FileReader_BlobPart.t), Options.t) => t;

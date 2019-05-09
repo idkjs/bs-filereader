@@ -9,4 +9,4 @@ npm i @zpnester/bs-filereader
 
 ## Notes
 
-* `File.make` is not supported in MS Edge, use `Blob.make` instead
+* `File.make` is not supported in old MS Edge, use `Blob.make` instead
