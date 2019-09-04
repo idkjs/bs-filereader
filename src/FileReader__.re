@@ -1,2 +1,0 @@
-type blob;
-type file;

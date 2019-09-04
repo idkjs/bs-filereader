@@ -1,4 +1,4 @@
-type t = FileReader__.file;
+type t = FileReader_Types.file;
 
 include (module type of
   FileReader_BlobLike.Make({
@@ -19,4 +19,4 @@ module Options: {
 
 let make: (array(FileReader_BlobPart.t), string) => t;
 
-let makeWithOptions: (array(FileReader_BlobPart.t), string, Options.t) => t;
+let make3: (array(FileReader_BlobPart.t), string, Options.t) => t;

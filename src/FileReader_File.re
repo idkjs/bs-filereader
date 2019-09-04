@@ -1,6 +1,4 @@
-open FileReader__;
-
-type t = file;
+type t = FileReader_Types.file;
 
 include FileReader_BlobLike.Make({
   type nonrec t = t;
@@ -21,6 +19,5 @@ module Options = {
 [@bs.new] external make: (array(FileReader_BlobPart.t), string) => t = "File";
 
 [@bs.new]
-external makeWithOptions:
-  (array(FileReader_BlobPart.t), string, Options.t) => t =
+external make3: (array(FileReader_BlobPart.t), string, Options.t) => t =
   "File";

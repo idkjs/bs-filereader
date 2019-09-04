@@ -1,4 +1,4 @@
-open FileReader__;
+open FileReader_Types;
 
 type t = blob;
 
@@ -26,5 +26,4 @@ module Options = {
 [@bs.new] external make: array(FileReader_BlobPart.t) => t = "Blob";
 
 [@bs.new]
-external makeWithOptions: (array(FileReader_BlobPart.t), Options.t) => t =
-  "Blob";
+external make2: (array(FileReader_BlobPart.t), Options.t) => t = "Blob";

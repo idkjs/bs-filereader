@@ -32,7 +32,7 @@ let now = Js.Date.make()->Js.Date.getTime;
 if (!isEdge) {
   let opts = File.Options.make(~_type="my/type", ~lastModified=now, ());
   let file =
-    File.makeWithOptions(
+    File.make3(
       [|BlobPart.uint8Array(Uint8Array.make([|192, 193|]))|],
       "file1",
       opts,
@@ -53,14 +53,14 @@ if (!isEdge) {
 };
 
 let blob =
-  Blob.makeWithOptions(
+  Blob.make2(
     [|BlobPart.uint8Array(Uint8Array.make([|65, 66, 67|]))|],
     Blob.Options.make(~_type="old/type", ()),
   );
 expectToEqual(blob->Blob.type_, "old/type");
 expectToEqual(blob->Blob.asFile->Option.isNone, true);
 
-let sliced = blob->Blob.slice(~start=1, ~end_=3, ~contentType="new/type");
+let sliced = blob->Blob.slice3(~start=1, ~end_=3, ~contentType="new/type");
 expectToEqual(sliced->Blob.type_, "new/type");
 expectToEqual(sliced->Blob.size, 2.0);
 
@@ -78,14 +78,14 @@ sliced->toArrayBuffer
 //file->Blob.toDataURL;
 
 let file =
-  Blob.makeWithOptions(
+  Blob.make2(
     [|BlobPart.uint8Array(Uint8Array.make([|192, 193|]))|],
     Blob.Options.make(~_type="my/type", ()),
   );
 
 //fr->readAsArrayBuffer(file->File.asBlob);
 //fr->readAsBinaryString(file->File.asBlob);
-fr->readAsTextWithEncoding(file, "Windows-1251");
+fr->readAsText2(file, ~encoding="Windows-1251");
 //fr->readAsDataURL(file->File.asBlob);
 
 //fr->readAsText(blob);
@@ -102,7 +102,7 @@ toDataURL(blob)
      resolve();
    });
 
-toText(file, ~encoding="Windows-1251", ())
+toText2(file, ~encoding="Windows-1251")
 |> then_(s => {
      expectToEqual(s, {js|АБ|js});
      resolve();
@@ -110,7 +110,7 @@ toText(file, ~encoding="Windows-1251", ())
 
 let blob2 =
   Blob.make([|BlobPart.string("hello"), BlobPart.string(" world")|]);
-blob2->toText()
+blob2->toText
 |> then_(s => {
      expectToEqual(s, "hello world");
      resolve();

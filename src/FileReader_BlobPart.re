@@ -1,9 +1,7 @@
-open FileReader__;
-
 type t;
 
 external arrayBuffer: Js.Typed_array.ArrayBuffer.t => t = "%identity";
-external blob: blob => t = "%identity";
+external blob: FileReader_Types.blob => t = "%identity";
 external string: string => t = "%identity";
 
 external int8Array: Js.Typed_array.Int8Array.t => t = "%identity";

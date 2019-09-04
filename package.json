@@ -1,13 +1,14 @@
 {
   "name": "@zpnester/bs-filereader",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
-    "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "watch": "bsb -make-world -w",
-    "webpack:watch": "webpack -w",
+    "bsc": "bsb -clean-world",
+    "bsb": "bsb -make-world",
+    "bsw": "bsb -make-world -w",
+    "ww": "webpack -w",
+    "wb": "webpack",
     "serve": "serve -p 8084 test_dist",
-    "start": "concurrently --raw npm:watch npm:webpack:watch npm:serve"
+    "start": "concurrently --raw npm:bsw npm:ww npm:serve"
   },
   "keywords": [
     "BuckleScript",
@@ -29,7 +30,7 @@
     "concurrently": "^4.1.0",
     "expect": "^23.6.0",
     "html-webpack-plugin": "^3.2.0",
-    "serve": "^10.1.1",
+    "serve": "^10.1.2",
     "webpack": "^4.28.1",
     "webpack-cli": "^3.1.2"
   }

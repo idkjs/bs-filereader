@@ -1,4 +1,4 @@
-open FileReader_Helpers;
+open FileReader_Types;
 
 type t;
 
@@ -15,13 +15,9 @@ let result:
     switch (value->Js.Json.decodeString) {
     | Some(str) => Some(`String(str))
     | None =>
-      if (value->isArrayBuffer) {
-        Some(`ArrayBuffer(asArrayBufferUnsafe(value)));
-      } else {
-        switch (value->Js.Json.decodeNull) {
-        | Some(_) => None
-        | None => failwith("unexpected result type")
-        };
+      switch (value->asArrayBuffer) {
+      | Some(ab) => Some(`ArrayBuffer(ab))
+      | None => None
       }
     };
   };
@@ -46,7 +42,7 @@ external readAsDataURL: (t, FileReader_Blob.t) => unit = "readAsDataURL";
 [@bs.send] external readAsText: (t, FileReader_Blob.t) => unit = "readAsText";
 
 [@bs.send]
-external readAsTextWithEncoding: (t, FileReader_Blob.t, string) => unit =
+external readAsText2: (t, FileReader_Blob.t, ~encoding: string) => unit =
   "readAsText";
 
 exception FileReadError;
@@ -77,7 +73,7 @@ let toDataURL = blob =>
     fr->readAsDataURL(blob);
   });
 
-let toText = (blob, ~encoding: option(string)=?, ()) =>
+let toText = blob =>
   Js.Promise.make((~resolve, ~reject) => {
     let fr = make();
     fr->onload(_ =>
@@ -87,10 +83,20 @@ let toText = (blob, ~encoding: option(string)=?, ()) =>
       }
     );
     fr->onerror(_ => reject(. FileReadError));
-    switch (encoding) {
-    | Some(encoding) => fr->readAsTextWithEncoding(blob, encoding)
-    | None => fr->readAsText(blob)
-    };
+    fr->readAsText(blob);
+  });
+
+let toText2 = (blob, ~encoding: string) =>
+  Js.Promise.make((~resolve, ~reject) => {
+    let fr = make();
+    fr->onload(_ =>
+      switch (fr->result) {
+      | Some(`String(str)) => resolve(. str)
+      | _ => reject(. FileReadError)
+      }
+    );
+    fr->onerror(_ => reject(. FileReadError));
+    fr->readAsText2(blob, ~encoding);
   });
 
 module File = FileReader_File;
